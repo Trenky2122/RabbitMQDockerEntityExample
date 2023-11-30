@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using RabbitMQDockerEntityExample.Core.BusinessLogic;
 using RabbitMQDockerEntityExample.Core.BusinessLogic.Models;
 using RabbitMQDockerEntityExample.Core.BusinessLogic.Models.DTOs.Input;
@@ -26,6 +25,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("Calculation/{key:int}", (int key, CalculationRequest body, [FromServices]ICalculationHandler handler) => handler.HandleCalculation(key, body));
+app.MapPost("Calculation/{key:int}", (int key, CalculationRequest body, ICalculationHandler handler) => handler.HandleCalculation(key, body));
 
 app.Run();
