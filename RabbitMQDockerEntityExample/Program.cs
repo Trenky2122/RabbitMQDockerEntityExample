@@ -1,7 +1,9 @@
+using RabbitMQDockerEntityExample.Core.BackgroundWorkers;
 using RabbitMQDockerEntityExample.Core.BusinessLogic;
 using RabbitMQDockerEntityExample.Core.BusinessLogic.Models;
 using RabbitMQDockerEntityExample.Core.BusinessLogic.Models.DTOs.Input;
 using RabbitMQDockerEntityExample.Core.BusinessLogic.Models.DTOs.Output;
+using RabbitMQDockerEntityExample.Core.Messaging;
 using RabbitMQDockerEntityExample.Core.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IStorage<int, CalculationStorageItem>, Storage<int, CalculationStorageItem>>();
 builder.Services.AddSingleton<ICalculationHandler, CalculationHandler>();
+builder.Services.AddTransient<IMessagingService, MessagingService>();
+builder.Services.AddHostedService<MessagesDisplayingWorker>();
 
 var app = builder.Build();
 
@@ -26,5 +30,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapPost("Calculation/{key:int}", (int key, CalculationRequest body, ICalculationHandler handler) => handler.HandleCalculation(key, body));
+
 
 app.Run();

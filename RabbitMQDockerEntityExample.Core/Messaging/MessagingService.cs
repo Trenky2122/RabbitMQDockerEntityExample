@@ -20,7 +20,9 @@ namespace RabbitMQDockerEntityExample.Core.Messaging
         {
             var factory = new ConnectionFactory()
             {
-                HostName = "localhost",
+                HostName = "host.docker.internal",
+                UserName = "myuser",
+                Password = "mypassword"
             };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
@@ -33,7 +35,7 @@ namespace RabbitMQDockerEntityExample.Core.Messaging
         {
             var messageJson = System.Text.Json.JsonSerializer.Serialize(message);
             var body = Encoding.UTF8.GetBytes(messageJson);
-            _channel.BasicPublish(exchange: QueueName,
+            _channel.BasicPublish(exchange: ExchangeName,
                 routingKey: RoutingKey,
                 body: body);
         }
@@ -44,9 +46,10 @@ namespace RabbitMQDockerEntityExample.Core.Messaging
             consumer.Received += (model, ea) =>
             {
                 action(model, ea);
+                _channel.BasicAck(ea.DeliveryTag, false);
             };
             _channel.BasicConsume(queue: QueueName,
-                autoAck: true,
+                autoAck: false,
                 consumer: consumer);
         }
 
