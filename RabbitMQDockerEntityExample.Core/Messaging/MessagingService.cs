@@ -21,8 +21,10 @@ public sealed class MessagingService : IMessagingService, IDisposable
             Password = settings.MessagingServiceSettings.RabbitMQPassword,
         };
         bool tryConnecting = true;
+        DateTime timeConnectingStarted = DateTime.UtcNow;
         while (tryConnecting)
         {
+            // we wait for RabbitMQ container to become available
             try
             {
                 _connection = factory.CreateConnection();
@@ -30,7 +32,8 @@ public sealed class MessagingService : IMessagingService, IDisposable
             }
             catch
             {
-                // we wait for RabbitMQ container to become available
+                if (DateTime.UtcNow - timeConnectingStarted > TimeSpan.FromSeconds(settings.MessagingServiceSettings.RabbitMQWaitSecond))
+                    throw; // probably something went wrong
             }
         }
         _channel = _connection.CreateModel();

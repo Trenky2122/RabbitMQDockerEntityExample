@@ -28,6 +28,7 @@ public class MessagingServiceSettings
     public string? RabbitMQHostname => _config["RabbitMQ:Hostname"];
     public string? RabbitMQUsername => _config["RabbitMQ:Username"];
     public string? RabbitMQPassword => _config["RabbitMQ:Password"];
+    public int RabbitMQWaitSecond => Convert.ToInt32(_config["RabbitMQ:WaitSeconds"]);
 }
 
 public class ConnectionStrings
