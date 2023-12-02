@@ -11,4 +11,9 @@
     <PackageReference Include="RabbitMQ.Client" Version="6.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RabbitMQDockerEntityExample.DAL\RabbitMQDockerEntityExample.DAL.csproj" />
+    <ProjectReference Include="..\RabbitMQDockerEntityExample.Settings\RabbitMQDockerEntityExample.Settings.csproj" />
+  </ItemGroup>
+
 </Project>

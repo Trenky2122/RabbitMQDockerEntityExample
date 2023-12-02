@@ -8,10 +8,10 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["RabbitMQDockerEntityExample/RabbitMQDockerEntityExample.Presentation.csproj", "RabbitMQDockerEntityExample/"]
-RUN dotnet restore "./RabbitMQDockerEntityExample/./RabbitMQDockerEntityExample.Presentation.csproj"
+COPY ["RabbitMQDockerEntityExample.Presentation/RabbitMQDockerEntityExample.Presentation.csproj", "RabbitMQDockerEntityExample.Presentation/"]
+RUN dotnet restore "./RabbitMQDockerEntityExample.Presentation/./RabbitMQDockerEntityExample.Presentation.csproj"
 COPY . .
-WORKDIR "/src/RabbitMQDockerEntityExample"
+WORKDIR "/src/RabbitMQDockerEntityExample.Presentation"
 RUN dotnet build "./RabbitMQDockerEntityExample.Presentation.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

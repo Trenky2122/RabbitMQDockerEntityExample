@@ -1,10 +1,12 @@
+using Microsoft.EntityFrameworkCore;
 using RabbitMQDockerEntityExample.Core.BackgroundWorkers;
 using RabbitMQDockerEntityExample.Core.BusinessLogic;
 using RabbitMQDockerEntityExample.Core.BusinessLogic.Models;
-using RabbitMQDockerEntityExample.Core.BusinessLogic.Models.DTOs.Input;
-using RabbitMQDockerEntityExample.Core.BusinessLogic.Models.DTOs.Output;
 using RabbitMQDockerEntityExample.Core.Messaging;
 using RabbitMQDockerEntityExample.Core.Storage;
+using RabbitMQDockerEntityExample.DAL;
+using RabbitMQDockerEntityExample.Presentation.Endpoints;
+using RabbitMQDockerEntityExample.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +16,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IStorage<int, CalculationStorageItem>, Storage<int, CalculationStorageItem>>();
 builder.Services.AddSingleton<ICalculationHandler, CalculationHandler>();
+builder.Services.AddSingleton<Settings>();
 builder.Services.AddTransient<IMessagingService, MessagingService>();
 builder.Services.AddHostedService<MessagesDisplayingWorker>();
+builder.Services.AddDbContext<ExampleDatabaseContext>();
 
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetService<ExampleDatabaseContext>();
+    context.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -29,7 +37,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("Calculation/{key:int}", (int key, CalculationRequest body, ICalculationHandler handler) => handler.HandleCalculation(key, body));
-
+app.RegisterCalculationEndpoints();
 
 app.Run();
